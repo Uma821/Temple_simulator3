@@ -1,0 +1,148 @@
+  seti main
+  move $t0
+  jl $t0 111 $ra
+
+DIV:
+  nor $allone
+  move $t0
+  add $one
+  move $t3
+  nor $allone
+  add $t2
+  move $r4
+LP1:
+  nor $allone
+  nor $t2
+  add $one
+  add $t1
+  seti LP2
+  move $r5
+  jl $r5 010 $ra
+  nor $allone
+  add $t2
+  add $t2
+  move $t2
+  nor $allone
+  add $t3
+  add $t3
+  move $t3
+  seti LP1
+  move $r5
+  jl $r5 111 $ra
+LP2:
+  nor $allone
+  nor $t2
+  add $one
+  add $t1
+  seti NX3
+  move $r5
+  jl $r5 010 $ra
+  nor $allone
+  add $t3
+  add $t0
+  move $t0
+  nor $allone
+  nor $t2
+  add $one
+  add $t1
+NX3:
+  nor $allone
+  add $t2
+  srl
+  move $t2
+  nor $allone
+  add $t3
+  srl
+  move $t3
+  nor $allone
+  nor $r4
+  add $one
+  add $t1
+  seti FIN_DIV
+  move $r5
+  jl $r5 010 $ra
+  seti LP2
+  move $r5
+  jl $r5 111 $ra
+FIN_DIV:
+  ld $sp
+  move $t0
+  seti 2
+  add $sp
+  move $sp
+  jl $t0 111 $ra
+main:
+  seti -2
+  add $sp
+  move $sp
+  seti 4
+  sd $sp
+  seti -2
+  add $sp
+  move $sp
+  seti 4
+  sd $sp
+  ld $sp
+  move $r1
+  seti 2
+  add $sp
+  move $sp
+  ld $sp
+  move $r0
+  seti 2
+  add $sp
+  move $sp
+  seti -2
+  add $sp
+  move $sp
+  nor $allone
+  add $r4
+  sd $sp
+  seti -2
+  add $sp
+  move $sp
+  nor $allone
+  add $r5
+  sd $sp
+  nor $allone
+  add $r0
+  move $t1
+  nor $allone
+  add $r1
+  move $t2
+  jl $zero 000 $t0
+  seti -2
+  add $sp
+  move $sp
+  seti 16
+  add $t0
+  sd $sp
+  seti DIV
+  move $t0
+  jl $t0 111 $ra
+  nor $allone
+  add $t3
+  move $r0
+  ld $sp
+  move $r5
+  seti 2
+  add $sp
+  move $sp
+  seti -2
+  add $sp
+  move $sp
+  nor $allone
+  add $r4
+  sd $sp
+  seti -2
+  add $sp
+  move $sp
+  nor $allone
+  add $r0
+  sd $sp
+  ld $sp
+  move $r0
+  seti 2
+  add $sp
+  move $sp
+  jl $allone 111 $ra

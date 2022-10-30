@@ -1,0 +1,102 @@
+10100000
+00000000
+00000000	//seti  0
+01100000	//move  $m0      // $r0 <- 0  ($r0:変数a)
+10100000
+00001010
+00000000	//seti  10
+01100001	//move  $m1      // $r1 <- 10  ($r1:変数b)
+10100000
+11101000
+00000011	//seti  1000
+01100111	//move  $m7      // $r7 <- 1000  ($r7:変数c)                         //  次の行にloop_i_start:定義
+10100000
+01100011
+00000000	//seti  loop_i_end
+01110111	//move  $m23           // loop_i_endのアドレスを$m23($t0)へ
+00011111	//nor  $m31            // $Acc <- 0
+00100000	//add  $m0             // $Acc <- $Acc + a        よって $Acc == a
+00000000	//nor  $m0             // $Acc <- ~($Acc | a)     よって $Acc == ~a
+00111110	//add  $m30            // $Acc <- ~($Acc | a) + 1 よって $Acc == -a
+00100001	//add  $m1             // $Acc <- b-a
+11010111
+11011000	//jl  $m23 110 $m24    // if(b-a <= 0) goto loop_i_end 変形すると if(b <= a) goto loop_i_end
+00011111	//nor  $m31            // $Acc <- 0
+00100001	//add  $m1             // $Acc <- $Acc + b        よって $Acc == b
+00111111	//add  $m31            // $Acc <- $Acc - 1        よって $Acc == b-1
+01100010	//move  $m2            // $2 <- $Acc   $r2 <- b-1  ($r2:変数d)                 //  次の行にloop_j_start:定義
+10100000
+01011001
+00000000	//seti  loop_j_end
+01110111	//move  $m23           // loop_j_endのアドレスを$m23($t0)へ
+00011111	//nor  $m31            // $Acc <- 0
+00100000	//add  $m0             // $Acc <- $Acc + a        よって $Acc == a
+00000000	//nor  $m0             // $Acc <- ~($Acc | a)     よって $Acc == ~a
+00111110	//add  $m30            // $Acc <- ~($Acc | a) + 1 よって $Acc == -a
+00100010	//add  $m2             // $Acc <- d-a
+11010111
+11011000	//jl  $m23 110 $m24    // if(d-a <= 0) goto loop_j_end 変形すると if(d <= a) goto loop_j_end
+00011111	//nor  $m31            // $Acc <- 0
+00100010	//add  $m2             // $Acc <- $Acc + d        よって $Acc == d == b-1
+00111111	//add  $m31            // $Acc <- $Acc - 1        よって $Acc == d-1 == b-2
+01100100	//move  $m4            // $r4 <- $Acc   $r4 <- d-1  ($r4:変数e)
+00011111	//nor  $m31            // $Acc <- 0
+00100010	//add  $m2             // $Acc <- $Acc + d        よって $Acc == d == b-1
+00100010	//add  $m2             // $Acc <- $Acc + d        よって $Acc == 2*d == 2*(b-1)
+01100011	//move  $m3            // $r3 <- $Acc   $r3 <- 2*d  ($r3:変数f)
+00011111	//nor  $m31            // $Acc <- 0
+00100100	//add  $m4             // $Acc <- e               よって $Acc == e == d-1
+00100100	//add  $m4             // $Acc <- $Acc + e        よって $Acc == 2*e == 2*(d-1)
+01100100	//move  $m4            // $r4 <- $Acc   e <- 2*e  
+00011111	//nor  $m31            // $Acc <- 0
+00100111	//add  $m7             // $Acc <- c               よって $Acc == c == 1000
+00100011	//add  $m3             // $Acc <- $Acc + f        よって $Acc == c+f == c+2*d
+01100011	//move  $m3            // $r3 <- $Acc   f <- c+f  
+00011111	//nor  $m31            // $Acc <- 0
+00100111	//add  $m7             // $Acc <- c               よって $Acc == c == 1000
+00100100	//add  $m4             // $Acc <- $Acc + e        よって $Acc == c+e
+01100100	//move  $m4            // $r4 <- $Acc   e <- c+e  
+01000011	//ld  $m3              // $Acc <- Mem[f]
+01100101	//move  $m5            // $r5 <- $Acc    ($5:変数g)
+01000100	//ld  $m4              // $Acc <- Mem[e]
+01100110	//move  $m6            // $r6 <- $Acc    ($6:変数h)
+10100000
+01001111
+00000000	//seti  skip_swap
+01110111	//move  $m23           // skip_swapのアドレスを$m23($t0)へ
+00011111	//nor  $m31            // $Acc <- 0
+00100101	//add  $m5             // $Acc <- $Acc + g        よって $Acc == g
+00000101	//nor  $m5             // $Acc <- ~($Acc | g)     よって $Acc == ~g
+00111110	//add  $m30            // $Acc <- ~($Acc | g) + 1 よって $Acc == -g
+00100110	//add  $m6             // $Acc <- $Acc + h        よって $Acc == h-g すなわち $Acc == Mem[e] - Mem[f]
+11010111
+11011000	//jl  $m23 110 $m24    // if(h-g <= 0) goto skip_swap 変形すると if(h <= g) goto skip_swap
+00011111	//nor  $m31            // $Acc <- 0
+00100101	//add  $m5             // $Acc <- $Acc + g        よって $Acc == g すなわち $Acc == Mem[f]
+10000100	//sd  $m4              // Mem[e] = Mem[f] 
+00011111	//nor  $m31            // $Acc <- 0
+00100110	//add  $m6             // $Acc <- $Acc + h        よって $Acc == h すなわち $Acc == Mem[e]
+10000011	//sd  $m3              // Mem[f] = Mem[e]   交換している      //  次の行にskip_swap:定義
+00011111	//nor  $m31            // $Acc <- 0
+00100010	//add  $m2             // $Acc <- $Acc + d
+00111111	//add  $m31            // $Acc <- $Acc - 1 よって $Acc == d-1
+01100010	//move  $m2            // d <- $Acc        よって --d
+10100000
+00011011
+00000000	//seti  loop_j_start
+01110111	//move  $m23           // loop_j_startのアドレスを$m23($t0)へ 
+11010111                                            
+11111000	//jl  $m23 111 $m24    // 無条件分岐 goto loop_j_start            // 次の行にloop_j_end:定義 
+00011111	//nor  $m31            // $Acc <- 0
+00100000	//add  $m0             // $Acc <- $Acc + a
+00111110	//add  $m30            // $Acc <- $Acc + 1
+01100000	//move  $m0            // a <- $Acc         よって ++a
+10100000
+00001100
+00000000	//seti  loop_i_start
+01110111	//move  $m23             
+11010111
+11111000	//jl  $m23 111 $m24    // 無条件分岐 goto loop_i_start            // 次の行にloop_i_end:定義
+11011111
+11111100	//jl  $m31 111 $m28    // シミュレーション終了
+

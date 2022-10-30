@@ -1,0 +1,68 @@
+ 　 // a=7
+       seti 7
+       move$r0    // $r0 <- 7  ($r0:変数a)
+       // b=2
+       seti 2
+       move $r1   // $r1 <- 2  ($r1:変数b)
+       // c=0
+       nor $allone  // $Acc <- 0
+       move $r2   $r1 <- 2     ($r2:変数c)
+forloop:
+       //  for (;a>=0;){
+       nor $allone
+       add $r0       //$Acc <- a-0
+       seti end:    // endのアドレスを$Accへ
+       move $t0    // $t0 <- $Acc
+       jl $t0 010 $ra   // Nだったらendへジャンプ
+       // c++
+       nor $allone // $Acc <- 0
+       add $one   // $Acc <- $Acc + 1
+       add $r2   // $Acc <- $Acc + $r2 
+       move $r2  // $r2 <- $Acc	$r2
+      // a-=b   a=a-b
+      nor $allone // $Acc <- 0
+      nor $r1     // $Acc <- $Acc nor $r1  $r1のnot
+      add $one    // $Acc <- $Acc + 1 　$r1の補数
+      add $r0     // $Acc <- $Acc + $r0   a=a-b
+      move $r0    // $r0 <- $Acc
+      // }
+      seti forloop:   // forloopのアドレスを$Accへ
+      move $t0       // $t0 <- $Acc
+      jl $t0 111 $ra  // $t0への絶対分岐
+
+end:
+      // a+=b
+      nor $allone // $Acc <- 0
+      add $r0     // $Acc <- $Acc + $r0
+      add $r1     // $Acc <- $Acc + $r1
+      move $r0
+
+       // c--
+      nor $allone // $Acc <- 0
+      add $allone   // $Acc <- $Acc + -1
+      add $r2   // $Acc <- $Acc + $r2 
+      move $r2  // $r2 <- $Acc	$r2
+      
+      // Mem[1000] <- a
+      seti 1000
+      move $r8
+      nor $allone
+      add $r0
+      sd $r8
+
+      // Mem[1002] <- b
+      seti 1002
+      move $r9
+      nor $allone
+      add $r1
+      sd $r9
+
+      // Mem[1004] <- c
+      seti 1004
+      move $r10
+      nor $allone
+      add $r2
+      sd $r10
+
+      // Simulation Stop
+      jl $allone 111 $ra    // シミュレーション停止するおまじない
